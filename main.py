@@ -1,7 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 import uvicorn
 from schemas import NumberRequest
 import functions
+from fastapi.responses import JSONResponse
 
 app = FastAPI()
 
@@ -24,6 +25,13 @@ async def number_to_words(data: NumberRequest):
     response = functions.send_soap_request(message, functions.number_to_words_parser)
     return {"number_in_words": response}
 
+
+@app.exception_handler(functions.ParserException)
+async def parser_exception_handler(request: Request, exc: functions.ParserException):
+    return JSONResponse(
+        status_code=400,
+        content={"message": f"Failed to parse a response from the external service"},
+    )
 
 # Запуск API
 if __name__ == "__main__":
