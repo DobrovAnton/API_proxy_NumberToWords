@@ -7,9 +7,7 @@ from fastapi import HTTPException
 
 def create_soap_envelope(body: str):
     """
-
-    :param body:
-    :return:
+    Формирует корневой элемент envelope.
     """
     return f"""<?xml version="1.0" encoding="utf-8"?>
                 <soap12:Envelope xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
@@ -21,9 +19,7 @@ def create_soap_envelope(body: str):
 
 def create_number_to_words_soap_message(number: int):
     """
-
-    :param number:
-    :return:
+    Формирует тело сообщения.
     """
     return create_soap_envelope(f"""<NumberToWords xmlns="http://www.dataaccess.com/webservicesserver/">
                                       <ubiNum>{number}</ubiNum>
@@ -32,9 +28,7 @@ def create_number_to_words_soap_message(number: int):
 
 def number_to_words_parser(response_xml: str):
     """
-    Находит в ответе число в виде текста.
-    :param response_xml:
-    :return:
+    Находит в ответе число в виде текста. Вызывает исключение в случае если число не найдено.
     """
     root = ET.fromstring(response_xml)
     body = root.find("soap:Body", namespaces)
@@ -50,10 +44,7 @@ def number_to_words_parser(response_xml: str):
 
 def send_soap_request(message: str, response_parser=None):
     """
-
-    :param message:
-    :param response_parser:
-    :return:
+    Формирует и отправляет запрос на сервер-службу Number Conversion Service
     """
     headers = {"Content-Type": "application/soap+xml; charset=utf-8"}
     response = requests.request("POST", DATA_ACCESS_API_URL, headers=headers, data=message)
