@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 import uvicorn
+from schemas import NumberRequest
+import functions
 
 app = FastAPI()
 
@@ -17,9 +19,12 @@ async def about():
 
 
 @app.post("/number_to_words")
-async def number_to_words():
-    pass
+async def number_to_words(data: NumberRequest):
+    message = functions.create_number_to_words_soap_message(data.ubiNum)
+    response = functions.send_soap_request(message, functions.number_to_words_parser)
+    return {"number_in_words": response}
 
 
+# Запуск API
 if __name__ == "__main__":
     uvicorn.run("main:app", reload=True, host="127.0.0.1", port=8000)
